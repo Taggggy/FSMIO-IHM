@@ -1,7 +1,13 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FSMIO<T1, T2> {
+public class FSMIO<T1, T2> implements Serializable{
 	private List<State> states;
 	private TransitionFunction<T1, T2> tf ;
 	private State currentState;	
@@ -20,12 +26,46 @@ public class FSMIO<T1, T2> {
 		this.states.add(init);
 		this.tf = new TransitionFunction<T1, T2>();
 	}	
+	
+	public FSMIO(String filename) {
+		ObjectInputStream ois = null;
+		
+		try {
+			final FileInputStream fichier = new FileInputStream(filename);
+			ois = new ObjectInputStream(fichier);
+			FSMIO<T1,T2> auto = (FSMIO<T1,T2>) ois.readObject();
+			this.states = auto.states;
+			this.tf = auto.tf;
+			this.currentState = auto.currentState;
+			this.initialState = auto.initialState;
+		} catch(final java.io.IOException e) {
+			e.printStackTrace();
+		} catch(final ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+		  try {
+			  if (ois !=null) {
+				 ois.close();
+			  }
+			 } catch(final IOException ex) {
+				 ex.printStackTrace();
+			 }
+		}
+	}
 
 	public void addTransition(State orig, T1 input, T2 output, State dest) throws Exception{
-		if(states.contains(orig) && states.contains(dest))
+		boolean containsOrig = false;
+		boolean containsDest = false;
+		for(State s : states)
+		{
+			if(s.getName().equals(orig.getName())) containsOrig = true;
+			if(s.getName().equals(dest.getName())) containsDest = true;
+		}
+		if(containsOrig && containsDest)
 			tf.addTransition(orig, input, output, dest);
 		else throw new ParametresInvalides();
 	}
+	
 	public boolean addState(State s) throws Exception{		
 		boolean done = false;
 		if(!this.states.contains(s)){
@@ -62,7 +102,13 @@ public class FSMIO<T1, T2> {
 	}
 
 	public String toString(){
-		return tf.toString();
+		String toReturn = new String();
+		for(State s : states) {
+			if(!toReturn.contains(s.toString()))
+				toReturn += s.toString() + " ";
+		}
+		toReturn += "]\n\n" + tf.toString();
+		return "States : [" + toReturn;
 	}
 	
 	public List<State> getStates()
@@ -78,5 +124,29 @@ public class FSMIO<T1, T2> {
 	public State getCurrentState()
 	{
 		return currentState;
+	}
+	
+	public void saveObject(String filename)
+	{
+		ObjectOutputStream oos = null;
+		
+		try{
+			FileOutputStream fichier = new FileOutputStream(filename);
+			oos = new ObjectOutputStream(fichier);
+			oos.writeObject(this);
+			oos.flush();
+			} catch(final java.io.IOException e) {
+				e.printStackTrace();
+			} finally {
+			  try {
+				  if(oos != null)
+				  {
+					  oos.flush();
+					  oos.close();
+				  }
+			   } catch(final IOException ex) {
+				   ex.printStackTrace();
+				   }
+			}
 	}
 }

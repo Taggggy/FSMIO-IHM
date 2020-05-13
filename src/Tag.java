@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Tag<T1, T2> implements Input<T1>, Output<T2>{
+public class Tag<T1, T2> implements Input<T1>, Output<T2>, Serializable{
 	
 	T1 input;
 	T2 output;
@@ -18,6 +19,6 @@ public class Tag<T1, T2> implements Input<T1>, Output<T2>{
 	}
 	
 	public String toString(){
-		return this.input + "/" + this.output;
+		return "Tag = " + this.input + "/" + this.output;
 	}
 }

@@ -1,8 +1,9 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class TransitionFunction <T1, T2>{
+public class TransitionFunction <T1, T2> implements Serializable{
 	private List<Transition<T1, T2>> transitions;
 
 	public TransitionFunction( ) {
@@ -41,5 +42,13 @@ public class TransitionFunction <T1, T2>{
 				listeTransitions.add(t);
 		}
 		return listeTransitions;
+	}
+	
+	public String toString() {
+		String toReturn = new String();
+		for(Transition<T1,T2> t : transitions) {
+			toReturn += "\t" + t.toString() + "\n";
+		}
+		return toReturn;
 	}
 }

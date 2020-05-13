@@ -69,5 +69,10 @@ public class FSMIOString{
 	public String toString(){
 		return this.fsms.toString();
 	}
+	
+	public void setFSM(FSMIO<String,String> f)
+	{
+		fsms = f;
+	}
 
 }

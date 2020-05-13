@@ -1,4 +1,6 @@
-public class State {
+import java.io.Serializable;
+
+public class State implements Serializable{
 	private String name;
 	
 	public State(String name){

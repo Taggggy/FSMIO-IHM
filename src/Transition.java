@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Transition<T1, T2> {
+public class Transition<T1, T2> implements Serializable{
 	private State orig, dest;
 	private Tag<T1, T2>	tag;
 	

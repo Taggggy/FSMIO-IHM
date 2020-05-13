@@ -14,10 +14,10 @@ import java.util.ArrayList;
  * @author Michael Kolling and David J Barnes 
  * @version 1.0
  */
-public class FSMIOViewer<T1,T2>
+public class FSMIOViewerEditable<T1,T2>
 {
     // constants:
-	private static final String VERSION = "2.0";
+	private static final String VERSION = "3.0";
     private static JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir"));
 
     // fields:
@@ -25,13 +25,13 @@ public class FSMIOViewer<T1,T2>
     private TextArea textArea;
     private JLabel filenameLabel;
     private JLabel statusLabel;
-    private FSMIO<T1,T2> currentFSMIO;
+    private FSMIO<T1,T2> currentFSMIO = null;
     private JMenuBar menubar;
     
     /**
      * Create an ImageViewer show it on screen.
      */
-    public FSMIOViewer()
+    public FSMIOViewerEditable()
     {
         makeFrame();
     }
@@ -131,7 +131,7 @@ public class FSMIOViewer<T1,T2>
     {
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     	
-        frame = new JFrame("FSMIOViewer");
+        frame = new JFrame("FSMIOViewerEditable");
         Dimension size = new Dimension(screenSize.height / 2, screenSize.width / 2);
         frame.setPreferredSize(size);
         makeMenuBar(frame);
@@ -205,6 +205,8 @@ public class FSMIOViewer<T1,T2>
                                public void actionPerformed(ActionEvent e) { quit(); }
                            });
         menu.add(item);
+        
+       createFSMIO();
 
     }
     
@@ -254,4 +256,111 @@ public class FSMIOViewer<T1,T2>
       
 		return menu;
 	}
+    
+    private void createFSMIO()
+    {
+    	boolean addTransitionMenu = true;
+        for(int i = 0; i < menubar.getMenuCount(); i++)
+        {
+        	if(menubar.getMenu(i).getText().equals("Edit"))
+        		addTransitionMenu = false;
+        }
+        if(!addTransitionMenu)
+        	return;
+        
+    	JMenu menu = new JMenu("Edit");
+    	menubar.add(menu);
+    	JMenuItem item;
+    	
+    	item = new JMenuItem("Add State");
+		item.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								
+						        State input = new State(JOptionPane.showInputDialog(frame, "Input a state name", "Add state", JOptionPane.INFORMATION_MESSAGE));
+						        try {
+									currentFSMIO.addState(input);
+								} catch (NullPointerException exc) {
+									currentFSMIO = new FSMIO<T1,T2>(input);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+						        textArea.setText(currentFSMIO.toString());
+							}
+						});
+		menu.add(item);
+		
+		item = new JMenuItem("Remove State");
+		item.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								textArea.setText("PAS ENCORE POSSIBLE DE SUPPRIMER");
+							}
+						});
+		menu.add(item);
+		
+		item = new JMenuItem("Add Transition");
+		item.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								JPanel panel = new JPanel();
+								JTextField originField = new JTextField(10);
+								JTextField destinationField = new JTextField(10);
+								JTextField inputField = new JTextField(10);
+								JTextField outputField = new JTextField(10);
+								
+								panel.add(new JLabel("Origin State : "));
+								panel.add(originField);
+								panel.add(new JLabel("Destination State : "));
+								panel.add(destinationField);
+								panel.add(new JLabel("Tag input : "));
+								panel.add(inputField);
+								panel.add(new JLabel("Tag output : "));
+								panel.add(outputField);
+								
+								JOptionPane.showConfirmDialog(frame, panel);
+								
+								State orig = new State(originField.getText());
+								State dest = new State(destinationField.getText());
+								Tag<T1,T2> tag = new Tag<>((T1)inputField, (T2)outputField);
+						        try {
+									currentFSMIO.addTransition(orig, (T1)inputField.getText(), (T2)outputField.getText(), dest);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+						        textArea.setText(currentFSMIO.toString());
+							}
+						});
+		menu.add(item);
+		
+		item = new JMenuItem("Remove Transition");
+		item.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+						        textArea.setText("PAS ENCORE POSSIBLE DE SUPPRIMER");
+							}
+						});
+		menu.add(item);
+		menu.addSeparator();
+		
+		item = new JMenuItem("Confirm & save");
+		item.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								String filename = JOptionPane.showInputDialog(frame, "Input a file name", "Save", JOptionPane.INFORMATION_MESSAGE);
+								currentFSMIO.saveObject(filename);
+								
+								showFilename(filename);
+						        JOptionPane.showMessageDialog(frame, filename, "File loaded", JOptionPane.INFORMATION_MESSAGE);
+						        showStatus("FSMIO Loaded. Current State: " + currentFSMIO.getInitialState());
+						        
+						        boolean addTransitionMenu = true;
+						        for(int i = 0; i < menubar.getMenuCount(); i++)
+						        {
+						        	if(menubar.getMenu(i).getText().equals("Transition"))
+						        		addTransitionMenu = false;
+						        }
+						        if(addTransitionMenu)
+						        	menubar.add(getOption());
+							}
+						});
+		menu.add(item);
+		
+		return;
+    }
 }
