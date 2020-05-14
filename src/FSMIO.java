@@ -178,8 +178,8 @@ public class FSMIO<T1, T2> implements Serializable{
 		reset();
 	}
 	
-	public void removeTransition(State orig, Tag<T1,T2> tag, State dest)
+	public void removeTransition(int index)
 	{
-		tf.removeTransition(orig, tag, dest);
+		tf.removeTransition(index);
 	}
 }

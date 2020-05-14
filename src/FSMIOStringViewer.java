@@ -243,10 +243,11 @@ public class FSMIOStringViewer
 					try {
 						String out = currentFSMIO.fsms.doTransition(in);
 						showStatus("New State: " + currentFSMIO.fsms.getCurrentState() + ". Output: " + out);
-					} catch (Exception exc) {
-						exc.printStackTrace();
+					} catch (ParametresInvalides exc) {
+						showStatus("Invalid Transition");
+					} catch (Exception e1) {
+						e1.printStackTrace();
 					}
-					
 				}
 			});
 			menu.add(item);

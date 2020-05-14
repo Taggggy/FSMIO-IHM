@@ -243,8 +243,10 @@ public class FSMIOViewer<T1,T2>
 					try {
 						T2 out = currentFSMIO.doTransition(in);
 						showStatus("New State: " + currentFSMIO.getCurrentState() + ". Output: " + out);
-					} catch (Exception exc) {
-						exc.printStackTrace();
+					} catch (ParametresInvalides exc) {
+						showStatus("Invalid Transition");
+					} catch (Exception e1) {
+						e1.printStackTrace();
 					}
 					
 				}
