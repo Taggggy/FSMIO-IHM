@@ -292,7 +292,9 @@ public class FSMIOViewerEditable<T1,T2>
 		item = new JMenuItem("Remove State");
 		item.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								textArea.setText("PAS ENCORE POSSIBLE DE SUPPRIMER");
+								State input = new State(JOptionPane.showInputDialog(frame, "Input a state name", "Remove state", JOptionPane.INFORMATION_MESSAGE));
+								currentFSMIO.removeState(input);
+								textArea.setText(currentFSMIO.toString());
 							}
 						});
 		menu.add(item);
@@ -319,9 +321,9 @@ public class FSMIOViewerEditable<T1,T2>
 								
 								State orig = new State(originField.getText());
 								State dest = new State(destinationField.getText());
-								Tag<T1,T2> tag = new Tag<>((T1)inputField, (T2)outputField);
 						        try {
 									currentFSMIO.addTransition(orig, (T1)inputField.getText(), (T2)outputField.getText(), dest);
+					
 								} catch (Exception e1) {
 									e1.printStackTrace();
 								}
@@ -333,7 +335,33 @@ public class FSMIOViewerEditable<T1,T2>
 		item = new JMenuItem("Remove Transition");
 		item.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-						        textArea.setText("PAS ENCORE POSSIBLE DE SUPPRIMER");
+								JPanel panel = new JPanel();
+								JTextField originField = new JTextField(10);
+								JTextField destinationField = new JTextField(10);
+								JTextField inputField = new JTextField(10);
+								JTextField outputField = new JTextField(10);
+								
+								panel.add(new JLabel("Origin State : "));
+								panel.add(originField);
+								panel.add(new JLabel("Destination State : "));
+								panel.add(destinationField);
+								panel.add(new JLabel("Tag input : "));
+								panel.add(inputField);
+								panel.add(new JLabel("Tag output : "));
+								panel.add(outputField);
+								
+								JOptionPane.showConfirmDialog(frame, panel);
+								
+								State orig = new State(originField.getText());
+								State dest = new State(destinationField.getText());
+								Tag<T1,T2> tag = new Tag<>((T1)inputField.getText(), (T2)outputField.getText());
+								//La suppression des transitions ne marche pas lorsque T1 != String et T2 != String
+								//En effet, c'est plus compliqué que ça de cast de String vers T1 ou String vers T2
+								//Donc les .equals de removeTransition ne marchent pas
+								//L'ajout de nouvelle transition marche mais n'est pas bonne du coup
+								System.out.println("to delete: " + orig + "/" + dest + "/" + tag);
+								currentFSMIO.removeTransition(orig, tag, dest);
+								textArea.setText(currentFSMIO.toString());
 							}
 						});
 		menu.add(item);
@@ -357,6 +385,7 @@ public class FSMIOViewerEditable<T1,T2>
 						        }
 						        if(addTransitionMenu)
 						        	menubar.add(getOption());
+						        //+ VERIFIER COHERENCE (COMPLETUDE ? DETERMINISME ?)
 							}
 						});
 		menu.add(item);

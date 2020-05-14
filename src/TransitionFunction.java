@@ -51,4 +51,21 @@ public class TransitionFunction <T1, T2> implements Serializable{
 		}
 		return toReturn;
 	}
+	
+	protected void removeTransition(State orig, Tag<T1,T2> tag, State dest)
+	{
+		for(Iterator<Transition<T1,T2>> it = transitions.iterator(); it.hasNext(); )
+		{
+			Transition<T1,T2> t = it.next();
+			if(t.getOrig().getName().equals(orig.getName()) && t.getDest().getName().equals(dest.getName()) && t.getTag().getInput().equals(tag.getInput()) && t.getTag().getOutput().equals(tag.getOutput()))
+				it.remove();
+			else {
+				System.out.print(t.getOrig().getName() + "/" + orig.getName() + "->" + t.getOrig().getName().equals(orig.getName()) + " ");
+				System.out.print(t.getDest().getName() + "/" + dest.getName() + "->" + t.getDest().getName().equals(dest.getName()) + " ");
+				System.out.print(t.getTag().getInput() + "/" + tag.getInput() + "->" + t.getTag().getInput().equals(tag.getInput()) +  " ");
+				System.out.print(t.getTag().getOutput() + "/" + tag.getOutput() + "->" + t.getTag().getOutput().equals(tag.getOutput()) +  " ");
+				System.out.println();
+			}
+		}
+	}
 }

@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class FSMIO<T1, T2> implements Serializable{
@@ -71,6 +72,9 @@ public class FSMIO<T1, T2> implements Serializable{
 		if(!this.states.contains(s)){
 			this.states.add(s);
 			done = true;
+			
+			if(initialState == null)
+				initialState = s;
 		}
 		else throw new ParametresInvalides();
 		return done;
@@ -102,8 +106,10 @@ public class FSMIO<T1, T2> implements Serializable{
 	}
 
 	public String toString(){
-		String toReturn = new String();
+		String toReturn = new String("");
 		for(State s : states) {
+			//System.out.println(toReturn);
+			//System.out.println(s);
 			if(!toReturn.contains(s.toString()))
 				toReturn += s.toString() + " ";
 		}
@@ -148,5 +154,32 @@ public class FSMIO<T1, T2> implements Serializable{
 				   ex.printStackTrace();
 				   }
 			}
+	}
+	
+	public void removeState(State s)
+	{
+		states.remove(s);
+		for(Iterator<State> it = states.iterator(); it.hasNext();)
+		{
+			State state = it.next();
+			if(state.getName().equals(s.getName()) || state.getName().equals(s.getName()))
+				it.remove();
+		}
+		for(Iterator<Transition<T1,T2>> it = tf.getTransitions().iterator(); it.hasNext();)
+		{
+			Transition<T1,T2> t = it.next();
+			if(t.getOrig().getName().equals(s.getName()) || t.getDest().getName().equals(s.getName()))
+				it.remove();
+		}
+		if(s.getName().equals(initialState.getName()) && states.size() != 0)
+			initialState = states.get(0);
+		else if(s.getName().equals(initialState.getName()))
+			initialState = null;
+		reset();
+	}
+	
+	public void removeTransition(State orig, Tag<T1,T2> tag, State dest)
+	{
+		tf.removeTransition(orig, tag, dest);
 	}
 }
