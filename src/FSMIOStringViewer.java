@@ -132,7 +132,7 @@ public class FSMIOStringViewer
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     	
         frame = new JFrame("FSMIOStringViewer");
-        Dimension size = new Dimension(screenSize.height / 2, screenSize.width / 2);
+        Dimension size = new Dimension(screenSize.width / 2,screenSize.height / 2);
         frame.setPreferredSize(size);
         makeMenuBar(frame);
         
@@ -222,7 +222,7 @@ public class FSMIOStringViewer
 		menu.add(item);
 		
 		ArrayList<String> inputs = new ArrayList<>();
-		//Récupère la liste des inputs possibles
+		//Rï¿½cupï¿½re la liste des inputs possibles
 		for(Transition<String,String> transition : currentFSMIO.fsms.gettf().getTransitions())
 		{
 			boolean addTransition = true;

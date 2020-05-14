@@ -132,7 +132,7 @@ public class FSMIOViewerEditable<T1,T2>
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     	
         frame = new JFrame("FSMIOViewerEditable");
-        Dimension size = new Dimension(screenSize.height / 2, screenSize.width / 2);
+        Dimension size = new Dimension(screenSize.width / 2,screenSize.height / 2);
         frame.setPreferredSize(size);
         makeMenuBar(frame);
         
@@ -224,7 +224,7 @@ public class FSMIOViewerEditable<T1,T2>
 		menu.add(item);
 		
 		ArrayList<T1> inputs = new ArrayList<>();
-		//Récupère la liste des inputs possibles
+		//Rï¿½cupï¿½re la liste des inputs possibles
 		for(Transition<T1,T2> transition : currentFSMIO.gettf().getTransitions())
 		{
 			boolean addTransition = true;
