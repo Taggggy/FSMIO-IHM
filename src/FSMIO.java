@@ -29,6 +29,7 @@ public class FSMIO<T1, T2> implements Serializable{
 	}	
 	
 	public FSMIO(String filename) {
+	//Crée un FSMIO à partir d'un fichier sérialisé
 		ObjectInputStream ois = null;
 		
 		try {
@@ -73,6 +74,7 @@ public class FSMIO<T1, T2> implements Serializable{
 			this.states.add(s);
 			done = true;
 			
+			//S'il n'y avait pas d'état initial fixé, on met le sommet ajouté comme état initial
 			if(initialState == null)
 				initialState = s;
 		}
@@ -108,8 +110,6 @@ public class FSMIO<T1, T2> implements Serializable{
 	public String toString(){
 		String toReturn = new String("");
 		for(State s : states) {
-			//System.out.println(toReturn);
-			//System.out.println(s);
 			if(!toReturn.contains(s.toString()))
 				toReturn += s.toString() + " ";
 		}
@@ -133,6 +133,7 @@ public class FSMIO<T1, T2> implements Serializable{
 	}
 	
 	public void saveObject(String filename)
+	//Sérialise le FSMIO dans un fichier
 	{
 		ObjectOutputStream oos = null;
 		
@@ -158,6 +159,7 @@ public class FSMIO<T1, T2> implements Serializable{
 	
 	public void removeState(State s)
 	{
+		//Retire toutes les occurences de s dans states
 		states.remove(s);
 		for(Iterator<State> it = states.iterator(); it.hasNext();)
 		{
@@ -165,14 +167,17 @@ public class FSMIO<T1, T2> implements Serializable{
 			if(state.getName().equals(s.getName()) || state.getName().equals(s.getName()))
 				it.remove();
 		}
+		//Retire toutes les transitions rattachées à s dans la fonction de transition
 		for(Iterator<Transition<T1,T2>> it = tf.getTransitions().iterator(); it.hasNext();)
 		{
 			Transition<T1,T2> t = it.next();
 			if(t.getOrig().getName().equals(s.getName()) || t.getDest().getName().equals(s.getName()))
 				it.remove();
 		}
+		//On modifie l'état initial si on vient de le supprimer
 		if(s.getName().equals(initialState.getName()) && states.size() != 0)
 			initialState = states.get(0);
+		//S'il n'y a plus d'état, on met l'état initial à null
 		else if(s.getName().equals(initialState.getName()))
 			initialState = null;
 		reset();

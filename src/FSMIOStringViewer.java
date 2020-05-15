@@ -6,30 +6,31 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * ImageViewer is the main class of the image viewer application. It builds and
- * displays the application GUI and initialises all other components.
+ * FSMIOStringViewer est la classe principale de l'application
+ * Elle met en place le GUI de l'application et initialise tous les composants
+ * Elle permet de dérouler un FSMIO<String,String> à partir d'un fichier.fsm
  * 
- * To start the application, create an object of this class.
+ * Pour démarrer l'application, créer une instance de cette classe
  * 
- * @author Michael Kolling and David J Barnes 
+ * @author LECOMTE Benjamin / RIBIERE Matthieu / MANCEAU Thibaut / DAUTREY Marin / LORIN Vincent
  * @version 1.0
  */
 public class FSMIOStringViewer  
 {
-    // constants:
+    //Constantes:
 	private static final String VERSION = "1.0";
     private static JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir"));
 
-    // fields:
+    // Champs:
     private JFrame frame;
-    private TextArea textArea;
+    private JTextArea textArea;
     private JLabel filenameLabel;
     private JLabel statusLabel;
     private FSMIOString currentFSMIO;
     private JMenuBar menubar;
     
     /**
-     * Create an ImageViewer show it on screen.
+     * Créer l'application FSMIOStringViewer
      */
     public FSMIOStringViewer()
     {
@@ -37,24 +38,23 @@ public class FSMIOStringViewer
     }
 
 
-    // ---- implementation of menu functions ----
     
     /**
-     * Open function: open a file chooser to select a new image file.
+     * Fonction d'ouverture: Ouvre le choix de fichier pour ouvrir un fichier .fsm
      * @throws Exception 
      */
     private void openFile() throws Exception
     {
-        int returnVal = fileChooser.showOpenDialog(frame);
+        int returnVal = fileChooser.showOpenDialog(frame); //Fenêtre de choix du fichier
 
         if(returnVal != JFileChooser.APPROVE_OPTION) {
-            return;  // cancelled
+            return;  // annulé
         }
-        File selectedFile = fileChooser.getSelectedFile();
-        currentFSMIO = new FSMIOString(selectedFile.getName());
-        textArea.setText(currentFSMIO.fsms.toString());
+        File selectedFile = fileChooser.getSelectedFile(); //Choix du fichier
+        currentFSMIO = new FSMIOString(selectedFile.getName()); //Instanciation d'un FSMIOString avec le nom du fichier
+        textArea.setText(currentFSMIO.fsms.toString()); //Affichage du FSMIO
         
-        if(currentFSMIO == null) {   // image file was not a valid image
+        if(currentFSMIO == null) {   // Le fichier ne contient pas un FSMIO
             JOptionPane.showMessageDialog(frame,
                     "The file was not in a recognized FSMIO file format.",
                     "FSMIO Load Error",
@@ -62,28 +62,30 @@ public class FSMIOStringViewer
             return;
         }
         
-        showFilename(selectedFile.getName());
-        JOptionPane.showMessageDialog(frame, selectedFile.getName(), "File loaded", JOptionPane.INFORMATION_MESSAGE);
-        showStatus("FSMIO Loaded. Current State: " + currentFSMIO.fsms.getInitialState());
+        showFilename(selectedFile.getName()); //Affichage du nom du fichier en haut
+        JOptionPane.showMessageDialog(frame, selectedFile.getName(), "File loaded", JOptionPane.INFORMATION_MESSAGE); //Popup de confirmation
+        showStatus("FSMIO Loaded. Current State: " + currentFSMIO.fsms.getInitialState()); //Affichage du statut / état initial
         
-        boolean addTransitionMenu = true;
+        boolean addTransitionMenu = true; //True s'il faut ajouter le menu de Transition
+        								  //False s'il est déjà affiché
         for(int i = 0; i < menubar.getMenuCount(); i++)
         {
         	if(menubar.getMenu(i).getText().equals("Transition"))
         		addTransitionMenu = false;
         }
         if(addTransitionMenu)
-        	menubar.add(getOption());
+        	menubar.add(getOption()); //Ajout du menu Transition dans la barre des menus
         
         frame.pack();
     }
 
 
 	/**
-     * Close function: clase the current image.
+     * Fonction de fermeture: ferme le FSMIO ouvert précedemment
      */
     private void close()
     {
+    	//Réinitialise tous les composants
         currentFSMIO = null;
         textArea.setText(null);
         showFilename(null);
@@ -92,17 +94,15 @@ public class FSMIOStringViewer
     }
     
     /**
-     * Quit function: quit the application.
+     * Fonction de fin : ferme l'application
      */
     private void quit()
     {
         System.exit(0);
     }
     
-    // ---- support methods ----
-
     /**
-     * Display a file name on the appropriate label.
+     * Affiche le nom du fichier dans la barre d'état
      */
     private void showFilename(String filename)
     {
@@ -115,43 +115,43 @@ public class FSMIOStringViewer
     }
     
     /**
-     * Display a status message in the frame's status bar.
+     * Affiche un message dans la barre de statut
      */
     private void showStatus(String text)
     {
         statusLabel.setText(text);
     }
     
-    // ---- swing stuff to build the frame and all its components ----
     
     /**
-     * Create the Swing frame and its content.
+     * Créer la fenêtre Swing et son contenu
      */
     private void makeFrame()
     {
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     	
         frame = new JFrame("FSMIOStringViewer");
-        Dimension size = new Dimension(screenSize.width / 2,screenSize.height / 2);
+        Dimension size = new Dimension(screenSize.width / 2, screenSize.height / 2); //Taille de la fenêtre
         frame.setPreferredSize(size);
-        makeMenuBar(frame);
+        makeMenuBar(frame); //Initialisation de la barre des menus
         
+        
+        //Placement de chaque éléments
         Container contentPane = frame.getContentPane();
-        
-        // Specify the layout manager with nice spacing
         contentPane.setLayout(new BorderLayout(6, 6));
         
-        filenameLabel = new JLabel();
+        filenameLabel = new JLabel(); //Barre d'état
         contentPane.add(filenameLabel, BorderLayout.NORTH);
 
-        textArea = new TextArea();
+        textArea = new JTextArea(); //Texte principal au milieu de la fenêtre
+        textArea.setEditable(false);
         contentPane.add(textArea, BorderLayout.CENTER);
         textArea.append("No FSMIO. Open a .fsm file to load a FSMIO.\nThe content of the file will appear here.");
         
-        statusLabel = new JLabel(VERSION);
+        statusLabel = new JLabel(VERSION); //Barre de statut
         contentPane.add(statusLabel, BorderLayout.SOUTH);
         
-        // building is done - arrange the components and show        
+        // Construction terminé - affichage des composants        
         showFilename(null);
         frame.pack();
         
@@ -161,7 +161,7 @@ public class FSMIOStringViewer
     }
     
     /**
-     * Create the main frame's menu bar.
+     * Création de la barre des menus
      */
     private void makeMenuBar(JFrame frame)
     {
@@ -175,33 +175,38 @@ public class FSMIOStringViewer
         JMenu menu;
         JMenuItem item;
         
-        // create the File menu
+        // Création du menu File
         menu = new JMenu("File");
         menubar.add(menu);
         
+        //Création du sous-menu Open
         item = new JMenuItem("Open");
-            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, SHORTCUT_MASK));
+            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, SHORTCUT_MASK)); //Raccourci CTRL+O
             item.addActionListener(new ActionListener() {
                                public void actionPerformed(ActionEvent e) { 
                             	   try {
-                            		   openFile();
+                            		   openFile(); //Lorsqu'on appuie, ouvre un fichier
                             	   } catch (Exception e1) {
                             		   e1.printStackTrace();
                             	   } }
                            	});
         menu.add(item);
 
+        // Création du menu Close
         item = new JMenuItem("Close");
-            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, SHORTCUT_MASK));
+            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, SHORTCUT_MASK)); //Raccourci CTRL+W
             item.addActionListener(new ActionListener() {
+            					//Lorsqu'on appuie, ferme le fichier
                                public void actionPerformed(ActionEvent e) { close(); }
                            });
         menu.add(item);
         menu.addSeparator();
         
+        //Création du sous-menu Quit
         item = new JMenuItem("Quit");
-            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, SHORTCUT_MASK));
+            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, SHORTCUT_MASK)); //Raccourci CTRL+Q
             item.addActionListener(new ActionListener() {
+            					//Lorsqu'on appuie, ferme l'application
                                public void actionPerformed(ActionEvent e) { quit(); }
                            });
         menu.add(item);
@@ -209,20 +214,23 @@ public class FSMIOStringViewer
     }
     
     private JMenu getOption() {
+    	//Création du menu Transition
 		JMenu menu = new JMenu("Transition");
 		JMenuItem item;
 		
+		//Création du sous-menu Reset
 		item = new JMenuItem("Reset");
 		item.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
 								showStatus("Current State: " + currentFSMIO.fsms.getInitialState());
+								//Reset le FSMIO et le statut affiché
 								currentFSMIO.fsms.reset();
 							}
 						});
 		menu.add(item);
 		
 		ArrayList<String> inputs = new ArrayList<>();
-		//Rï¿½cupï¿½re la liste des inputs possibles
+		//Récupère la liste des inputs possibles
 		for(Transition<String,String> transition : currentFSMIO.fsms.gettf().getTransitions())
 		{
 			boolean addTransition = true;
@@ -235,12 +243,14 @@ public class FSMIOStringViewer
 				inputs.add(transition.getTag().getInput());
 		}
 		
+		//Création des sous-menus pour chaque entrée du FSMIO
 		for(String in : inputs)
 		{
 			item = new JMenuItem(in);
 			item.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
+						//Effectue la transition associée à l'entrée et modifie le statut
 						String out = currentFSMIO.fsms.doTransition(in);
 						showStatus("New State: " + currentFSMIO.fsms.getCurrentState() + ". Output: " + out);
 					} catch (ParametresInvalides exc) {
