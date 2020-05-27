@@ -347,6 +347,15 @@ public class FSMIOViewerEditable<T1,T2>
 									e1.printStackTrace();
 								}
 						        textArea.setText(currentFSMIO.toString()); //Affiche le FSMIO
+						        
+						        for(int i = 0; i < menubar.getMenuCount(); i++)
+						        {
+						        	if(menubar.getMenu(i).getText().equals("Transition"))
+						        	{
+						        		menubar.remove(i);
+						        	}
+						        }						        	
+						        menubar.add(getOption());
 							}
 						});
 		menu.add(item);
@@ -370,6 +379,15 @@ public class FSMIOViewerEditable<T1,T2>
 								int index = cb.getSelectedIndex();
 								currentFSMIO.removeTransition(index); //supprime la transition choisie et affiche le FSMIO
 								textArea.setText(currentFSMIO.toString());
+								
+								for(int i = 0; i < menubar.getMenuCount(); i++)
+						        {
+						        	if(menubar.getMenu(i).getText().equals("Transition"))
+						        	{
+						        		menubar.remove(i);
+						        	}
+						        }						        	
+						        menubar.add(getOption());
 							}
 						});
 		menu.add(item);
@@ -386,16 +404,7 @@ public class FSMIOViewerEditable<T1,T2>
 								//Ouvre le FSMIO enregistré normalement
 								showFilename(filename);
 						        JOptionPane.showMessageDialog(frame, filename, "File loaded", JOptionPane.INFORMATION_MESSAGE);
-						        showStatus("FSMIO Loaded. Current State: " + currentFSMIO.getInitialState());
-						        
-						        boolean addTransitionMenu = true;
-						        for(int i = 0; i < menubar.getMenuCount(); i++)
-						        {
-						        	if(menubar.getMenu(i).getText().equals("Transition"))
-						        		addTransitionMenu = false;
-						        }
-						        if(addTransitionMenu)
-						        	menubar.add(getOption());
+						        showStatus("FSMIO Loaded. Current State: " + currentFSMIO.getInitialState()); 
 							}
 						});
 		menu.add(item);
